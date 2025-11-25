@@ -1,5 +1,6 @@
 import streamlit as st
 from logic import algoSolver
+import pandas as pd
 
 st.title('CPU scheduling algorithm')
 
@@ -29,6 +30,14 @@ if st.button('Solve'):
     ans = algoSolver(at,bt,option,tq,priority)
     if not ans:
         st.error("Incorrect input")
+    else:
+        headers = ans.keys()
+        data = dict()
+        for key in headers:
+            if key!="Process":
+                data[key] = ans[key]
+        df = pd.DataFrame(data,index=ans['Process'])
+        st.table(df)
 
 
 
