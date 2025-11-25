@@ -15,13 +15,19 @@ option = st.selectbox(
     index=None,
     placeholder="Choose an algorithm"
 )
+
+tq = None
+priority = None
+
 if option == "Round robin(RR)":
     tq = st.text_input('Time quantum')
-
+elif option == "Premptive Priority scheduling" or option == "Non-Premptive priority scheduling":
+    priority = st.text_input('Priority')
 
 
 if st.button('Solve'):
-    if not algoSolver(at,bt,option):
+    ans = algoSolver(at,bt,option,tq,priority)
+    if not ans:
         st.error("Incorrect input")
 
 
