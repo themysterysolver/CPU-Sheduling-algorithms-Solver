@@ -20,7 +20,7 @@ def algoSolver(at,bt,option,tq=None,p=None):
     elif option == "Shortest remaining time first(SRTF)":
         ans = SRTF(at,bt)
     elif option == "Premptive Priority scheduling":
-        pass
+        ans = PPS(at,bt,priority)
     elif option == "Non-Premptive priority scheduling":
         ans =  NPPS(at,bt,priority)
     elif option == "Round robin(RR)":
@@ -152,3 +152,42 @@ def SRTF(at,bt):
         
     return {"Process":[chr(ord('A')+i) for i in range(n)],"Arrival Time":at,"Burst Time":rem,"Completion Time":ct,"Turn Around Time":tat,"Waiting Time":wt}
     
+def PPS(at,bt,priority):
+    n = len(at)
+    ct = [0]*n
+    tat = [0]*n
+    wt = [0]*n
+
+    process = sorted(range(n),key=lambda i:at[i])
+
+    rem = bt[::]
+
+    time = 0
+    completed = [False]*n
+    finished = 0
+
+    while finished<n:
+        idx = -1
+        prio = float('inf')
+        for i in process:
+            if not completed[i] and at[i]<=time:
+                if priority[i]<prio:
+                    prio = priority[i]
+                    idx = i
+        
+        if idx == -1:
+            time+=1
+        else:
+            time+=1
+            bt[idx]-=1
+            if bt[idx] == 0:
+                completed[idx] = True
+                finished+=1
+                ct[idx] = time
+        
+    for i in range(n):
+        tat[i] = ct[i] - at[i]
+        wt[i] = tat[i] - rem[i]
+    # print(rem)
+    # print(bt)
+    return {"Process":[chr(ord('A')+i) for i in range(n)],"Arrival Time":at,"Burst Time":rem,"Completion Time":ct,"Turn Around Time":tat,"Waiting Time":wt}        
