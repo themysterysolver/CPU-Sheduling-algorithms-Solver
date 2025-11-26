@@ -18,7 +18,7 @@ def algoSolver(at,bt,option,tq=None,p=None):
     elif option == "Shortest job first(SJF)":
         ans = SJF(at,bt)
     elif option == "Shortest remaining time first(SRTF)":
-        pass
+        ans = SRTF(at,bt)
     elif option == "Premptive Priority scheduling":
         pass
     elif option == "Non-Premptive priority scheduling":
@@ -115,3 +115,40 @@ def NPPS(at,bt,priority):
         wt[i] = tat[i] - bt[i]
 
     return {"Process":[chr(ord('A')+i) for i in range(n)],"Arrival Time":at,"Burst Time":bt,"Completion Time":ct,"Turn Around Time":tat,"Waiting Time":wt}        
+
+def SRTF(at,bt):
+    n = len(at)
+    ct = [0]*n
+    wt = [0]*n
+    tat = [0]*n
+    completed = [False]*n
+    finished = 0
+    time = 0
+
+    rem = bt[::] #lazy to chnage that here should have used and decremeneted this all time!
+
+    process = sorted(range(n),key=lambda i:at[i])
+    while finished<n:
+        idx = -1
+        minbt = float('inf')
+        for i in process:
+            if not completed[i] and at[i]<=time:
+                if bt[i]<minbt:
+                    minbt = bt[i]
+                    idx = i
+        if idx == -1:
+            time+=1
+        else:
+            time+=1
+            bt[idx]-=1
+            if bt[idx] == 0:
+                completed[idx] = True
+                finished+=1
+                ct[idx] = time
+    
+    for i in process:
+        tat[i] = ct[i]-at[i]
+        wt[i] = tat[i]-rem[i]
+        
+    return {"Process":[chr(ord('A')+i) for i in range(n)],"Arrival Time":at,"Burst Time":rem,"Completion Time":ct,"Turn Around Time":tat,"Waiting Time":wt}
+    
