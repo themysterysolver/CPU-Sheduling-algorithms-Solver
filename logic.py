@@ -22,7 +22,7 @@ def algoSolver(at,bt,option,tq=None,p=None):
     elif option == "Premptive Priority scheduling":
         pass
     elif option == "Non-Premptive priority scheduling":
-        pass
+        ans =  NPPS(at,bt,priority)
     elif option == "Round robin(RR)":
         pass
 
@@ -81,3 +81,37 @@ def SJF(at,bt):
 
     return {"Process":[chr(ord('A')+i) for i in range(n)],"Arrival Time":at,"Burst Time":bt,"Completion Time":ct,"Turn Around Time":tat,"Waiting Time":wt}        
     
+def NPPS(at,bt,priority):
+    n = len(at)
+    ct = [0]*n
+    tat = [0]*n
+    wt = [0]*n
+
+    process = sorted(range(n),key=lambda i:at[i])
+
+    time = 0
+    completed = [False]*n
+    finished = 0
+
+    while finished<n:
+        idx = -1
+        prio = float('inf')
+        for i in process:
+            if not completed[i] and at[i]<=time:
+                if priority[i]<prio:
+                    prio = priority[i]
+                    idx = i
+        
+        if idx == -1:
+            time+=1
+        else:
+            time+=bt[idx]
+            ct[idx] = time
+            completed[idx] = True
+            finished+=1
+        
+    for i in range(n):
+        tat[i] = ct[i] - at[i]
+        wt[i] = tat[i] - bt[i]
+
+    return {"Process":[chr(ord('A')+i) for i in range(n)],"Arrival Time":at,"Burst Time":bt,"Completion Time":ct,"Turn Around Time":tat,"Waiting Time":wt}        

@@ -23,7 +23,7 @@ priority = None
 if option == "Round robin(RR)":
     tq = st.text_input('Time quantum')
 elif option == "Premptive Priority scheduling" or option == "Non-Premptive priority scheduling":
-    priority = st.text_input('Priority')
+    priority = st.text_input('Priority',placeholder="Lower =# Higher priority")
 
 
 if st.button('Solve'):
