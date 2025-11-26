@@ -1,5 +1,5 @@
 import re
-
+from collections import deque
 def algoSolver(at,bt,option,tq=None,p=None):
     at = list(map(int,re.split(r'\s+',at.strip())))
     bt = list(map(int,(re.split(r'\s+',bt.strip()))))
@@ -9,7 +9,8 @@ def algoSolver(at,bt,option,tq=None,p=None):
         priority = list(map(int,(re.split(r'\s+',p.strip()))))
         if len(priority)!=len(at):
             return False
-
+    if tq:
+        tq = int(tq)
     # print(option)
     # print(tq,p)
     ans  = {}
@@ -24,7 +25,7 @@ def algoSolver(at,bt,option,tq=None,p=None):
     elif option == "Non-Premptive priority scheduling":
         ans =  NPPS(at,bt,priority)
     elif option == "Round robin(RR)":
-        pass
+        ans = RR(at,bt,tq)
 
     return ans
 
@@ -191,3 +192,49 @@ def PPS(at,bt,priority):
     # print(rem)
     # print(bt)
     return {"Process":[chr(ord('A')+i) for i in range(n)],"Arrival Time":at,"Burst Time":rem,"Completion Time":ct,"Turn Around Time":tat,"Waiting Time":wt}        
+
+def RR(at,bt,tq):
+    n = len(at)
+    ct = [0]*n
+    tat = [0]*n
+    wt = [0]*n
+
+    process = sorted(range(n),key=lambda i:at[i])
+
+    rem = bt[::]
+    rq = deque([]) #ready queue
+    time = 0
+    completed = [False]*n
+    finished = 0
+    gidx = 0
+    while finished<n:
+        while gidx<n and not completed[gidx] and at[gidx]<=time :
+            rq.append(gidx)
+            gidx+=1
+        
+        if not rq:
+            next_arrival = min([at[i] for i in range(n) if not completed[i]])
+            time = max(time, next_arrival)
+            continue
+        
+        idx = rq.popleft()
+        extime = min(tq,rem[idx]) #executing time
+        rem[idx]-=extime
+        time+=extime
+
+        while gidx<n and not completed[gidx] and at[gidx]<=time :
+            rq.append(gidx)
+            gidx+=1
+        
+        if rem[idx]>0:
+            rq.append(idx)
+        else:
+            ct[idx] = time
+            finished+=1
+
+    for i in process:
+        tat[i] = ct[i]-at[i]
+        wt[i] = tat[i]-bt[i]
+
+    return {"Process":[chr(ord('A')+i) for i in range(n)],"Arrival Time":at,"Burst Time":bt,"Completion Time":ct,"Turn Around Time":tat,"Waiting Time":wt}
+
